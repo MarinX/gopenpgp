@@ -14,11 +14,22 @@ func SignCleartextMessageArmored(privateKey string, passphrase []byte, text stri
 		return "", errors.Wrap(err, "gopenpgp: error in creating key object")
 	}
 
-	unlockedKey, err := signingKey.Unlock(passphrase)
+	isLocked, err := signingKey.IsLocked()
 	if err != nil {
-		return "", errors.Wrap(err, "gopenpgp: error in unlocking key")
+		return "", errors.Wrap(err, "gopenpgp: error in checking if key is locked")
 	}
-	defer unlockedKey.ClearPrivateParams()
+
+	var unlockedKey *crypto.Key
+	if isLocked {
+		var err error
+		unlockedKey, err = signingKey.Unlock(passphrase)
+		if err != nil {
+			return "", errors.Wrap(err, "gopenpgp: error in unlocking key")
+		}
+		defer unlockedKey.ClearPrivateParams()
+	} else {
+		unlockedKey = signingKey
+	}
 
 	keyRing, err := crypto.NewKeyRing(unlockedKey)
 	if err != nil {

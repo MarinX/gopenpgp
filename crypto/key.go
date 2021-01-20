@@ -25,6 +25,13 @@ type Key struct {
 	entity *openpgp.Entity
 }
 
+// UserInfo contains user information on key
+type UserInfo struct {
+	ID    string
+	Name  string
+	Email string
+}
+
 // --- Create Key object
 
 // NewKeyFromArmoredReader reads an armored data into a key.
@@ -376,6 +383,16 @@ func (key *Key) ToPublic() (publicKey *Key, err error) {
 
 	publicKey.ClearPrivateParams()
 	return
+}
+
+// PrimaryIdentity returns user identity
+func (key *Key) PrimaryIdentity() *UserInfo {
+	pr := key.entity.PrimaryIdentity()
+	return &UserInfo{
+		Name:  pr.UserId.Name,
+		Email: pr.UserId.Email,
+		ID:    pr.UserId.Id,
+	}
 }
 
 // --- Internal methods

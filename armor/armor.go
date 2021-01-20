@@ -26,7 +26,7 @@ func ArmorWithTypeBuffered(w io.Writer, armorType string) (io.WriteCloser, error
 
 // ArmorWithType armors input with the given armorType.
 func ArmorWithType(input []byte, armorType string) (string, error) {
-	return armorWithTypeAndHeaders(input, armorType, internal.ArmorHeaders)
+	return armorWithTypeAndHeaders(input, armorType, nil)
 }
 
 // ArmorWithTypeAndCustomHeaders armors input with the given armorType and
